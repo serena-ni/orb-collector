@@ -5,7 +5,7 @@ const player = { x: 300, y: 200, size: 20, speed: 4, trail: [] };
 let score = 0;
 let health = 100;
 let gameStarted = false;
-const floatingTexts = []; // for +10 points effects
+const floatingTexts = []; // for + points effects
 
 const instructions = document.getElementById("instructions");
 document.getElementById("startButton").onclick = () => {
@@ -89,24 +89,24 @@ function checkCollisions() {
             let points = orb.value;
 
             if(orb.special){ // yellow orbs
-                // Multiply by random between -5 and +5
-                points *= (Math.random()*10 - 5);
-                health -= 10; // risk effect
+                // multiplier -15 to +10
+                points *= (Math.random() * 25 - 15);
+                health -= 10; // risk
             } else { // blue orbs
-                // Multiply by random between 0.5 and 1.5
-                points *= (Math.random() + 0.5);
+                // multiplier -1 to +2
+                points *= (Math.random() * 3 - 1);
                 health -= 2; // normal drain
             }
 
             score += points;
 
-            // Add floating text
+            // Floating text
             floatingTexts.push({
                 x: orb.x,
                 y: orb.y,
                 text: points > 0 ? `+${Math.round(points)}` : `${Math.round(points)}`,
                 opacity: 1,
-                lifetime: Math.random()*5000 // 0–5 seconds
+                lifetime: Math.random()*5000
             });
 
             orbs.splice(i,1);
@@ -138,20 +138,20 @@ function draw() {
     ctx.arc(player.x + player.size/2, player.y + player.size/2, player.size/2,0,Math.PI*2);
     ctx.fill();
 
-    // draw orbs with pulsing effect
+    // draw orbs
     orbs.forEach(orb=>{
         const pulse = Math.sin(Date.now()/200 + orb.x + orb.y)*3;
         ctx.fillStyle = orb.special ? "#ffff00" : "#00ffe0";
         ctx.fillRect(orb.x, orb.y, orb.size + pulse, orb.size + pulse);
     });
 
-    // draw floating text
+    // draw floating texts
     for(let i=floatingTexts.length-1;i>=0;i--){
         const t = floatingTexts[i];
         ctx.fillStyle = `rgba(255,255,255,${t.opacity})`;
         ctx.font = "16px monospace";
         ctx.fillText(t.text, t.x, t.y);
-        t.y -= 0.5; // move up slowly
+        t.y -= 0.5;
         t.opacity -= 0.005;
         t.lifetime -= 16;
         if(t.opacity <= 0 || t.lifetime <=0){
@@ -166,7 +166,7 @@ function draw() {
     ctx.strokeRect(10,10,200,20);
 
     // score
-    document.getElementById("score").textContent = `Score: ${score}  Health: ${Math.round(health)}`;
+    document.getElementById("score").textContent = `Score: ${Math.round(score)}  Health: ${Math.round(health)}`;
 }
 
 function endGame() {
@@ -185,7 +185,7 @@ function endGame() {
     endScreen.style.fontFamily = "monospace";
     endScreen.innerHTML = `
         Game Over!<br>
-        Final Score: ${score}<br>
+        Final Score: ${Math.round(score)}<br>
         Refresh the page to play again.
     `;
     document.body.appendChild(endScreen);
