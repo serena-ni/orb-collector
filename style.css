@@ -1,38 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
-
 body {
-  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: radial-gradient(circle at center, #111, #000);
-  font-family: "Press Start 2P", monospace;
-  color: #fff;
+  font-family: monospace;
+  background: #1a1a1a;
+  color: white;
+  margin: 0;
+  padding: 0;
 }
 
-h1 {
-  margin: 10px 0;
-  text-shadow: 2px 2px #ff007f;
-}
-
-#instructions {
-  margin-bottom: 10px;
-  text-align: center;
-  background: rgba(0,0,0,0.7);
-  padding: 10px;
+#gameCanvas {
+  background: #222;
+  display: block;
+  margin: 20px auto;
+  border: 2px solid #555;
   border-radius: 10px;
 }
 
 #score {
-  margin-bottom: 10px;
-  font-size: 14px;
-  text-shadow: 2px 2px #00ffe0;
-  background: rgba(0,0,0,0.6);
-  padding: 6px 12px;
-  border: 2px solid #fff;
-  border-radius: 8px;
+  font-size: 18px;
+  margin-top: 10px;
 }
 
+/* Start button from Uiverse.io */
 .cssbuttons-io-button {
   background: #a370f0;
   color: white;
@@ -52,13 +42,6 @@ h1 {
   height: 2.8em;
   padding-right: 3.3em;
   cursor: pointer;
-}
-
-.center-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .cssbuttons-io-button .icon {
@@ -94,9 +77,6 @@ h1 {
   transform: scale(0.95);
 }
 
-canvas {
-  border: 4px solid #fff;
-  border-radius: 10px;
-  background-color: #111;
-  box-shadow: 0 0 20px #ff007f, 0 0 40px #00ffe0 inset;
+.center-container {
+  margin-top: 20px;
 }
