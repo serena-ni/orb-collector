@@ -89,15 +89,14 @@ function checkCollisions() {
 
             if(orb.special){ // yellow orbs
                 points *= (Math.random() * 20 - 10); // [-10, 10]
-                health -= 10; // risk
+                health -= 10;
             } else { // blue orbs
                 points *= (Math.random() * 3 - 1); // [-1, 2]
-                health -= 2; // normal drain
+                health -= 2;
             }
 
             score += points;
 
-            // Floating text
             floatingTexts.push({
                 x: orb.x,
                 y: orb.y,
@@ -106,11 +105,43 @@ function checkCollisions() {
                 lifetime: Math.random()*5000
             });
 
+            // Remove collected orb
             orbs.splice(i,1);
+
+            // Spawn a new orb immediately
+            spawnOrb();
         }
     }
 
-    health -= 0.05; // constant drain
+    health -= 0.05;
+}
+
+// Keep minimum number of orbs on screen
+function maintainOrbs() {
+    while(orbs.length < 10){
+        spawnOrb();
+    }
+}
+
+// Call maintainOrbs in update() after checkCollisions()
+function update() {
+    if(!gameStarted) return;
+
+    const now = performance.now();
+    const deltaTime = now - lastTime;
+    lastTime = now;
+
+    updateDifficulty(deltaTime);
+    movePlayer();
+    checkCollisions();
+    maintainOrbs(); // <- ensures new orbs spawn if needed
+    draw();
+
+    if(health > 0) {
+        requestAnimationFrame(update);
+    } else {
+        endGame();
+    }
 }
 
 function draw() {
