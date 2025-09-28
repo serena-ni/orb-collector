@@ -10,12 +10,12 @@ const floatingTexts = [];
 const instructions = document.getElementById("instructions");
 document.getElementById("startButton").onclick = () => {
     instructions.style.display = "none";
+    document.querySelector(".center-container").style.display = "none";
     gameStarted = true;
     lastTime = performance.now();
     update();
 };
 
-// Orbs array
 const orbs = [];
 function spawnOrb() {
     orbs.push({
@@ -26,6 +26,7 @@ function spawnOrb() {
         value: 10
     });
 }
+
 // initial orbs
 for(let i=0;i<10;i++) spawnOrb();
 
@@ -46,6 +47,7 @@ function update() {
     updateDifficulty(deltaTime);
     movePlayer();
     checkCollisions();
+    maintainOrbs();
     draw();
 
     if(health > 0) {
@@ -57,11 +59,11 @@ function update() {
 
 function updateDifficulty(deltaTime) {
     difficultyTimer += deltaTime;
-    if(difficultyTimer > 10000) { // every 10 seconds
+    if(difficultyTimer > 10000) {
         difficultyTimer = 0;
-        spawnOrb(); // spawn extra orb
-        player.speed += 0.2; // slightly faster
-        health -= 1; // extra drain
+        spawnOrb();
+        player.speed += 0.2;
+        health -= 1;
     }
 }
 
@@ -74,7 +76,6 @@ function movePlayer() {
     player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
     player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
 
-    // Trail
     player.trail.push({ x: player.x + player.size/2, y: player.y + player.size/2 });
     if(player.trail.length > 15) player.trail.shift();
 }
@@ -87,11 +88,11 @@ function checkCollisions() {
         if(Math.sqrt(dx*dx + dy*dy) < player.size/2 + orb.size/2){
             let points = orb.value;
 
-            if(orb.special){ // yellow orbs
-                points *= (Math.random() * 20 - 10); // [-10, 10]
+            if(orb.special){
+                points *= (Math.random() * 20 - 10); // [-10,10]
                 health -= 10;
-            } else { // blue orbs
-                points *= (Math.random() * 3 - 1); // [-1, 2]
+            } else {
+                points *= (Math.random() * 3 - 1); // [-1,2]
                 health -= 2;
             }
 
@@ -105,54 +106,27 @@ function checkCollisions() {
                 lifetime: Math.random()*5000
             });
 
-            // Remove collected orb
             orbs.splice(i,1);
-
-            // Spawn a new orb immediately
-            spawnOrb();
+            spawnOrb(); // respawn immediately
         }
     }
 
     health -= 0.05;
 }
 
-// Keep minimum number of orbs on screen
 function maintainOrbs() {
     while(orbs.length < 10){
         spawnOrb();
     }
 }
 
-// Call maintainOrbs in update() after checkCollisions()
-function update() {
-    if(!gameStarted) return;
-
-    const now = performance.now();
-    const deltaTime = now - lastTime;
-    lastTime = now;
-
-    updateDifficulty(deltaTime);
-    movePlayer();
-    checkCollisions();
-    maintainOrbs(); // <- ensures new orbs spawn if needed
-    draw();
-
-    if(health > 0) {
-        requestAnimationFrame(update);
-    } else {
-        endGame();
-    }
-}
-
 function draw() {
-    // background gradient
     const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
     gradient.addColorStop(0, "#111");
     gradient.addColorStop(1, "#222");
     ctx.fillStyle = gradient;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // draw trail
     player.trail.forEach((p,i)=>{
         ctx.fillStyle = `rgba(255,0,127,${i/player.trail.length*0.5})`;
         ctx.beginPath();
@@ -160,20 +134,17 @@ function draw() {
         ctx.fill();
     });
 
-    // draw player
     ctx.fillStyle = "#ff007f";
     ctx.beginPath();
     ctx.arc(player.x + player.size/2, player.y + player.size/2, player.size/2,0,Math.PI*2);
     ctx.fill();
 
-    // draw orbs
     orbs.forEach(orb=>{
         const pulse = Math.sin(Date.now()/200 + orb.x + orb.y)*3;
         ctx.fillStyle = orb.special ? "#ffff00" : "#00ffe0";
         ctx.fillRect(orb.x, orb.y, orb.size + pulse, orb.size + pulse);
     });
 
-    // draw floating texts
     for(let i=floatingTexts.length-1;i>=0;i--){
         const t = floatingTexts[i];
         ctx.fillStyle = `rgba(255,255,255,${t.opacity})`;
@@ -182,39 +153,17 @@ function draw() {
         t.y -= 0.5;
         t.opacity -= 0.005;
         t.lifetime -= 16;
-        if(t.opacity <= 0 || t.lifetime <=0){
-            floatingTexts.splice(i,1);
-        }
+        if(t.lifetime <= 0 || t.opacity <= 0) floatingTexts.splice(i,1);
     }
 
-    // health bar
-    ctx.fillStyle = `rgb(${255 - health*2.5}, ${health*2.5}, 0)`;
-    ctx.fillRect(10,10, health*2, 20);
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(10,10,200,20);
-
-    // score
     document.getElementById("score").textContent = `Score: ${Math.round(score)}  Health: ${Math.round(health)}`;
 }
 
 function endGame() {
-    gameStarted = false;
-    canvas.style.display = "none";
-    document.getElementById("score").style.display = "none";
-
-    const endScreen = document.createElement("div");
-    endScreen.style.position = "absolute";
-    endScreen.style.top = "50%";
-    endScreen.style.left = "50%";
-    endScreen.style.transform = "translate(-50%,-50%)";
-    endScreen.style.color = "#ff007f";
-    endScreen.style.fontSize = "32px";
-    endScreen.style.textAlign = "center";
-    endScreen.style.fontFamily = "monospace";
-    endScreen.innerHTML = `
-        Game Over!<br>
-        Final Score: ${Math.round(score)}<br>
-        Refresh the page to play again.
-    `;
-    document.body.appendChild(endScreen);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.font = "30px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(`Game Over! Final Score: ${Math.round(score)}`, canvas.width/2, canvas.height/2);
 }
