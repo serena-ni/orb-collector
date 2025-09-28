@@ -5,7 +5,7 @@ const player = { x: 300, y: 200, size: 20, speed: 4, trail: [] };
 let score = 0;
 let health = 100;
 let gameStarted = false;
-const floatingTexts = []; // for + points effects
+const floatingTexts = [];
 
 const instructions = document.getElementById("instructions");
 document.getElementById("startButton").onclick = () => {
@@ -33,7 +33,6 @@ const keys = {};
 document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => keys[e.key] = false);
 
-// Difficulty tracking
 let difficultyTimer = 0;
 let lastTime = 0;
 
@@ -89,12 +88,10 @@ function checkCollisions() {
             let points = orb.value;
 
             if(orb.special){ // yellow orbs
-                // multiplier -15 to +10
-                points *= (Math.random() * 25 - 15);
+                points *= (Math.random() * 20 - 10); // [-10, 10]
                 health -= 10; // risk
             } else { // blue orbs
-                // multiplier -1 to +2
-                points *= (Math.random() * 3 - 1);
+                points *= (Math.random() * 3 - 1); // [-1, 2]
                 health -= 2; // normal drain
             }
 
