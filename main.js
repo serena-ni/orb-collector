@@ -1,3 +1,15 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const startButton = document.getElementById("startButton");
+    const instructions = document.getElementById("instructions");
+    startButton.onclick = () => {
+        instructions.style.display = "none";
+        document.querySelector(".center-container").style.display = "none";
+        gameStarted = true;
+        lastTime = performance.now();
+        update();
+    };
+});
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
