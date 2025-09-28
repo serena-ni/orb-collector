@@ -1,28 +1,3 @@
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: monospace;
-  background: #1a1a1a;
-  color: white;
-  margin: 0;
-  padding: 0;
-}
-
-#gameCanvas {
-  background: #222;
-  display: block;
-  margin: 20px auto;
-  border: 2px solid #555;
-  border-radius: 10px;
-}
-
-#score {
-  font-size: 18px;
-  margin-top: 10px;
-}
-
-/* Start button from Uiverse.io */
 .cssbuttons-io-button {
   background: #a370f0;
   color: white;
@@ -75,8 +50,4 @@ body {
 
 .cssbuttons-io-button:active .icon {
   transform: scale(0.95);
-}
-
-.center-container {
-  margin-top: 20px;
 }
