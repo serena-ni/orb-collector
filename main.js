@@ -25,6 +25,33 @@ for (let i = 0; i < 10; i++) {
     });
 }
 
+let spawnInterval = 2000; // spawn a new orb every 2 seconds
+let difficultyTimer = 0;
+
+function updateDifficulty(deltaTime) {
+    difficultyTimer += deltaTime;
+
+    // Every 10 seconds, increase difficulty
+    if (difficultyTimer > 10000) {
+        difficultyTimer = 0;
+
+        // Spawn more orbs
+        orbs.push({
+            x: Math.random() * (canvas.width - 20),
+            y: Math.random() * (canvas.height - 20),
+            size: 15,
+            special: Math.random() < 0.3,
+            value: 10
+        });
+
+        // Speed up player slightly
+        player.speed += 0.2;
+
+        // Increase health drain slightly
+        health -= 1;
+    }
+}
+
 const keys = {};
 document.addEventListener("keydown", e => keys[e.key] = true);
 document.addEventListener("keyup", e => keys[e.key] = false);
@@ -117,6 +144,52 @@ function draw() {
 
     // Score
     document.getElementById("score").textContent = `Score: ${score}  Health: ${Math.round(health)}`;
+}
+
+function endGame() {
+    gameStarted = false;
+
+    // Hide game canvas
+    canvas.style.display = "none";
+    document.getElementById("score").style.display = "none";
+
+    // Show end screen
+    const endScreen = document.createElement("div");
+    endScreen.style.position = "absolute";
+    endScreen.style.top = "50%";
+    endScreen.style.left = "50%";
+    endScreen.style.transform = "translate(-50%, -50%)";
+    endScreen.style.color = "#ff007f";
+    endScreen.style.fontSize = "32px";
+    endScreen.style.textAlign = "center";
+    endScreen.style.fontFamily = "monospace";
+    endScreen.innerHTML = `
+        Game Over!<br>
+        Final Score: ${score}<br>
+        Refresh page to play again.
+    `;
+    document.body.appendChild(endScreen);
+}
+
+let lastTime = performance.now();
+
+function update() {
+    if(!gameStarted) return;
+
+    const now = performance.now();
+    const deltaTime = now - lastTime;
+    lastTime = now;
+
+    updateDifficulty(deltaTime);
+    movePlayer();
+    checkCollisions();
+    draw();
+
+    if (health > 0) {
+        requestAnimationFrame(update);
+    } else {
+        endGame();
+    }
 }
 
 function resetGame() {
