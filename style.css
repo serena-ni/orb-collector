@@ -1,53 +1,57 @@
-.cssbuttons-io-button {
-  background: #a370f0;
-  color: white;
-  font-family: inherit;
-  padding: 0.35em;
-  padding-left: 1.2em;
-  font-size: 17px;
-  font-weight: 500;
-  border-radius: 0.9em;
-  border: none;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  box-shadow: inset 0 0 1.6em -0.6em #714da6;
+body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+  font-family: 'Press Start 2P', monospace;
   overflow: hidden;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 10px;
+  color: #ffcc00;
+  text-shadow: 0 0 8px #ffcc00, 0 0 16px #ffcc00;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+#instructions {
+  font-size: 10px;
+  color: #d0eaff;
+  margin-top: 5px;
+  text-shadow: 0 0 4px #00ffff;
+  line-height: 1.5;
+}
+
+#gameContainer {
   position: relative;
-  height: 2.8em;
-  padding-right: 3.3em;
-  cursor: pointer;
+  width: 600px;
+  height: 400px;
+  margin: 20px auto;
+  border: 2px solid #00ffff;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0d1b2a, #050a14 90%);
+  box-shadow: 0 0 20px #00ffff44;
 }
 
-.cssbuttons-io-button .icon {
-  background: white;
-  margin-left: 1em;
-  position: absolute;
+canvas {
+  display: block;
+  background: transparent;
+}
+
+.hud {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.2em;
-  width: 2.2em;
-  border-radius: 0.7em;
-  box-shadow: 0.1em 0.1em 0.6em 0.2em #7b52b9;
-  right: 0.3em;
-  transition: all 0.3s;
+  justify-content: space-between;
+  width: 600px;
+  margin: 0 auto;
+  font-size: 10px;
+  color: #9cff00;
+  text-shadow: 0 0 4px #9cff00;
+  letter-spacing: 1px;
 }
 
-.cssbuttons-io-button:hover .icon {
-  width: calc(100% - 0.6em);
-}
-
-.cssbuttons-io-button .icon svg {
-  width: 1.1em;
-  transition: transform 0.3s;
-  color: #7b52b9;
-}
-
-.cssbuttons-io-button:hover .icon svg {
-  transform: translateX(0.1em);
-}
-
-.cssbuttons-io-button:active .icon {
-  transform: scale(0.95);
+#score, #highscore, #timer {
+  padding: 4px;
 }
