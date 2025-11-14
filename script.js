@@ -6,18 +6,18 @@ canvas.height = 400;
 // Player
 const player = { x: 300, y: 200, radius: 15, speed: 4 };
 
-// Game state
+// game state
 let score = 0;
 let highscore = localStorage.getItem("orbHighscore") || 0;
 let timeLeft = 60;
 let level = 1;
 
-// Objects
+// objects
 let orbs = [];
 let hazards = [];
 let powerups = [];
 
-// Input
+// input
 let keys = {};
 
 // HUD
@@ -26,7 +26,7 @@ const highscoreEl = document.getElementById("highscore");
 const timerEl = document.getElementById("timer");
 highscoreEl.textContent = `Highscore: ${highscore}`;
 
-// Orb generator
+// orb generator
 function generateOrb() {
   return {
     x: Math.random() * (canvas.width-20) + 10,
@@ -54,7 +54,7 @@ function generatePowerup() {
   };
 }
 
-// Initialize level
+// initialize level
 function initLevel() {
   orbs = Array.from({length: level+2}, generateOrb);
   hazards = Array.from({length: level}, generateHazard);
@@ -63,11 +63,11 @@ function initLevel() {
 
 initLevel();
 
-// Input listeners
+// input listeners
 window.addEventListener("keydown", e => keys[e.key] = true);
 window.addEventListener("keyup", e => keys[e.key] = false);
 
-// Player movement
+// player movement
 function movePlayer() {
   if(keys["ArrowUp"] && player.y-player.radius>0) player.y -= player.speed;
   if(keys["ArrowDown"] && player.y+player.radius<canvas.height) player.y += player.speed;
@@ -75,18 +75,18 @@ function movePlayer() {
   if(keys["ArrowRight"] && player.x+player.radius<canvas.width) player.x += player.speed;
 }
 
-// Collision
+// collision
 function checkCollision(a,b) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   return Math.sqrt(dx*dx + dy*dy) < a.radius + b.radius;
 }
 
-// Update game
+// update game
 function update() {
   movePlayer();
 
-  // Collect orbs
+  // collect orbs
   orbs.forEach((orb,i)=>{
     if(checkCollision(player, orb)){
       score += orb.value;
@@ -99,7 +99,7 @@ function update() {
     }
   });
 
-  // Hazards
+  // hazards
   hazards.forEach((hazard,i)=>{
     if(checkCollision(player, hazard)){
       score = Math.max(score - 5, 0);
@@ -107,7 +107,7 @@ function update() {
     }
   });
 
-  // Powerups
+  // powerups
   powerups.forEach((p,i)=>{
     if(p.active && checkCollision(player,p)){
       p.active = false;
@@ -117,18 +117,18 @@ function update() {
     }
   });
 
-  // Next level
+  // next level
   if(orbs.length === 0){
     level++;
     initLevel();
   }
 }
 
-// Draw objects
+// draw objects
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // Orbs (glow)
+  // orbs (glow)
   orbs.forEach(orb=>{
     ctx.beginPath();
     ctx.arc(orb.x, orb.y, orb.radius + Math.sin(Date.now()/200)*orb.glow*5, 0, Math.PI*2);
@@ -137,7 +137,7 @@ function draw() {
     ctx.closePath();
   });
 
-  // Hazards
+  // hazards
   hazards.forEach(h=>{
     ctx.beginPath();
     ctx.arc(h.x,h.y,h.radius,0,Math.PI*2);
@@ -146,7 +146,7 @@ function draw() {
     ctx.closePath();
   });
 
-  // Powerups
+  // powerups
   powerups.forEach(p=>{
     if(p.active){
       ctx.beginPath();
@@ -157,7 +157,7 @@ function draw() {
     }
   });
 
-  // Player
+  // player
   ctx.beginPath();
   ctx.arc(player.x,player.y,player.radius,0,Math.PI*2);
   ctx.fillStyle = "#9cff00";
@@ -168,7 +168,7 @@ function draw() {
   scoreEl.textContent = `Score: ${score}`;
 }
 
-// Game loop
+// game loop
 function loop(){
   update();
   draw();
@@ -176,7 +176,7 @@ function loop(){
 }
 loop();
 
-// Timer
+// timer
 setInterval(()=>{
   if(timeLeft>0){
     timeLeft--;
