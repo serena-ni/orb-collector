@@ -23,13 +23,17 @@ const highscoreEl = document.getElementById("highscore");
 const timerEl = document.getElementById("timer");
 highscoreEl.textContent = `Highscore: ${highscore}`;
 
+// screen shake
+let shakeDuration = 0;
+let shakeMagnitude = 5;
+
 // object generators
 function generateOrb() {
   return { x: Math.random()*(canvas.width-20)+10, y: Math.random()*(canvas.height-20)+10, radius: 10, value: Math.floor(Math.random()*5)+1, glow: Math.random()*0.5+0.5 };
 }
 
 function generateHazard() {
-  return { x: Math.random()*(canvas.width-20)+10, y: Math.random()*(canvas.height-20)+10, radius: 12, speed: 0.5+level*0.1 };
+  return { x: Math.random()*(canvas.width-20)+10, y: Math.random()*(canvas.height-20)+10, radius: 12, speed: 0.5 + level*0.1 };
 }
 
 function generatePowerup() {
@@ -68,7 +72,7 @@ function movePlayer() {
   if(player.y > canvas.height - player.radius) player.y = canvas.height - player.radius;
 }
 
-// hazards move slowly toward player
+// hazards move toward player
 function moveHazards() {
   hazards.forEach(h => {
     const dx = player.x - h.x;
@@ -106,10 +110,18 @@ function update() {
     return true;
   });
 
-  // hazards
+  // hazards (sacrifice)
   hazards.forEach(h => {
     if(checkCollision(player,h)){
-      score = Math.max(score-5,0); // sacrifice
+      score = Math.max(score-5,0);   // penalty
+      shakeDuration = 5;              // trigger screen shake
+
+      // small knockback
+      const dx = player.x - h.x;
+      const dy = player.y - h.y;
+      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      player.vx += (dx/dist) * 2;
+      player.vy += (dy/dist) * 2;
     }
   });
 
@@ -135,9 +147,18 @@ function update() {
 
 // draw
 function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // screen shake offset
+  let offsetX = 0, offsetY = 0;
+  if(shakeDuration > 0){
+    offsetX = (Math.random()*2 -1) * shakeMagnitude;
+    offsetY = (Math.random()*2 -1) * shakeMagnitude;
+    shakeDuration--;
+  }
 
-  // background trail for retro feel
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+
+  // background trail
   ctx.fillStyle = "rgba(17,17,17,0.3)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
@@ -180,7 +201,7 @@ function draw() {
     }
   });
 
-  // Player
+  // player
   ctx.beginPath();
   ctx.arc(player.x,player.y,player.radius,0,Math.PI*2);
   ctx.fillStyle = "#9cff00";
@@ -193,6 +214,8 @@ function draw() {
   // HUD
   scoreEl.textContent = `Score: ${score}`;
   timerEl.textContent = `Time: ${timeLeft}`;
+
+  ctx.restore();
 }
 
 // loop
@@ -201,11 +224,6 @@ loop();
 
 // timer
 setInterval(()=>{
-  if(timeLeft>0){
-    timeLeft--;
-  } else {
-    // time's up: penalty
-    score = Math.max(score-10,0);
-    timeLeft = 10; // give a small buffer
-  }
+  if(timeLeft>0){ timeLeft--; }
+  else { score = Math.max(score-10,0); timeLeft=10; }
 },1000);
